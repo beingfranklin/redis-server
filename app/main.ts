@@ -3,18 +3,26 @@ import * as net from "net";
 // You can use print statements as follows for debugging, they'll be visible when running tests.
 console.log("Logs from your program will appear here!");
 
-// Uncomment this block to pass the first stage
-const server: net.Server = net.createServer((connection: net.Socket) => {
-  // Handle connection
-  console.log("data received");
+// Create a server instance
+const server: net.Server = net.createServer();
+
+// Handle new client connections
+server.on("connection", (connection: net.Socket) => {
+  console.log("New client connected");
+
+  // Handle data received from the client
   connection.on("data", (data: Buffer) => {
     console.log(data.toString());
-	  connection.write(`+PONG\r\n`);
+    connection.write(`+PONG\r\n`);
   });
-  // Handle disconnection
+
+  // Handle client disconnection
   connection.on("end", () => {
-    console.log("connection ended");
+    console.log("Client disconnected");
   });
 });
 
-server.listen(6379, "127.0.0.1");
+// Start the server and listen for incoming connections
+server.listen(6379, "127.0.0.1", () => {
+  console.log("Server started and listening on port 6379");
+});
