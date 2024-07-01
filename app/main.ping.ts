@@ -13,16 +13,8 @@ server.on("connection", (connection: net.Socket) => {
 
   // Handle data received from the client
   connection.on("data", (data: Buffer) => {
-    const dataString = data.toString();
-    console.log(dataString);
-    // respond to echo command
-    if (dataString.includes("ECHO")) {
-      connection.write(`+${dataString.slice(5)}\r\n`);
-    }
-    else if (dataString.includes("PING"))
-    {
-      connection.write(`+PONG\r\n`);
-    }
+    console.log(data.toString());
+    connection.write(`+PONG\r\n`);
   });
 
   // Handle client disconnection
