@@ -18,7 +18,7 @@ server.on("connection", (connection: net.Socket) => {
   connection.on("data", (data: Buffer) => {
     const startOfString = '+';
     const endOfString = '\r\n';
-    const nullString = '-1'+endOfString;
+    const nullString = '$-1'+endOfString;
     const dataString = data.toString().split(endOfString);
     const command = dataString[2].toLowerCase();
     console.log({command, dataString});
@@ -45,7 +45,7 @@ server.on("connection", (connection: net.Socket) => {
         break;
       case "get":
         const keyToGet = dataString[4];
-        if (expiryTimes.has(keyToGet) && expiryTimes.get(keyToGet) < Date.now()) {
+        if (expiryTimes.has(keyToGet) && (expiryTimes.get(keyToGet) < Date.now())) {
           keyValuePairs.delete(keyToGet);
           expiryTimes.delete(keyToGet);
           connection.write(nullString);
