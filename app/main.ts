@@ -6,7 +6,8 @@ console.log("Logs from your program will appear here!");
 // Create a server instance
 const server: net.Server = net.createServer();
 
-// Handle new client connections
+// Handle new client connections instead of using the connection event of the server 
+// and individual connection events for each client
 server.on("connection", (connection: net.Socket) => {
   console.log("New client connected");
 
