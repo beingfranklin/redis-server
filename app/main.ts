@@ -12,6 +12,7 @@ server.on("connection", (connection: net.Socket) => {
   console.log("New client connected");
 
   const keyValuePairs = new Map<string, string>();
+  const expiryTimes = new Map<string, number>();
 
   // Handle data received from the client
   connection.on("data", (data: Buffer) => {
@@ -32,24 +33,27 @@ server.on("connection", (connection: net.Socket) => {
         connection.write(`${startOfString}${echoMessage}${endOfString}`);
         break;
       case "set":
-        // set expiry time for key-value pair
-        if (dataString[5] === 'px'){
-        const expiryTime = Number(dataString[8]);
-        if (expiryTime && expiryTime - Date.now() < 0){
-          connection.write(nullString);
-          break;
-        }
-        }
-
-
         const key = dataString[4];
         const value = dataString[6];
+        const expiryTime = Number(dataString[10]);
+        // check if the command has px and expiry time
+        if (expiryTime && dataString[8] === 'px') {
+          expiryTimes.set(key, expiryTime + Date.now());
+          connection.write(`${startOfString}OK${endOfString}`);
+        }
         keyValuePairs.set(key, value);
         connection.write(`${startOfString}OK${endOfString}`);
         break;
       case "get":
         const keyToGet = dataString[4];
         const valueToGet = keyValuePairs.get(keyToGet);
+        if (expiryTimes.has(keyToGet) && expiryTimes.get(keyToGet) < Date.now()) {
+          keyValuePairs.delete(keyToGet);
+          expiryTimes.delete(keyToGet);
+          connection.write(nullString);
+          break;
+        }
+          
         connection.write(`${startOfString}${valueToGet}${endOfString}`);
         break;
       default:
