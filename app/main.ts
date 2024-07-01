@@ -45,14 +45,13 @@ server.on("connection", (connection: net.Socket) => {
         break;
       case "get":
         const keyToGet = dataString[4];
-        const valueToGet = keyValuePairs.get(keyToGet);
         if (expiryTimes.has(keyToGet) && expiryTimes.get(keyToGet) < Date.now()) {
           keyValuePairs.delete(keyToGet);
           expiryTimes.delete(keyToGet);
           connection.write(nullString);
           break;
         }
-          
+        const valueToGet = keyValuePairs.get(keyToGet);
         connection.write(`${startOfString}${valueToGet}${endOfString}`);
         break;
       default:
