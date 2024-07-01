@@ -22,7 +22,7 @@ server.on("connection", (connection: net.Socket) => {
         connection.write(`+PONG\r\n`);
         break;
       case "echo":
-        connection.write(`${dataString[4]}\r\n`);
+        connection.write(`+${dataString[4]}\r\n`);
         break;
       default:
         connection.write(`-ERR unknown command '${dataString[2].trim()}'\r\n`);
