@@ -17,7 +17,7 @@ server.on("connection", (connection: net.Socket) => {
   connection.on("data", (data: Buffer) => {
     const startOfString = '+';
     const endOfString = '\r\n';
-    const nullString = '$-1'+endOfString;
+    const nullString = '-1'+endOfString;
     const dataString = data.toString().split(endOfString);
     const command = dataString[2].toLowerCase();
     console.log({command, dataString});
