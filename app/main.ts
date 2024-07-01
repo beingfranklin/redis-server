@@ -10,7 +10,9 @@ const server: net.Server = net.createServer((connection: net.Socket) => {
   connection.on("data", (data: Buffer) => {
     console.log(data.toString());
 	  connection.write(`+PONG\r\n`);
-    connection.end();
+  });
+  connection.on("end", () => {
+    console.log("connection ended");
   });
 });
 
