@@ -11,13 +11,13 @@ const server: net.Server = net.createServer();
 server.on("connection", (connection: net.Socket) => {
   console.log("New client connected");
 
-
   const keyValuePairs = new Map<string, string>();
 
   // Handle data received from the client
   connection.on("data", (data: Buffer) => {
     const startOfString = '+';
     const endOfString = '\r\n';
+    const nullString = '$-1'+endOfString;
     const dataString = data.toString().split(endOfString);
     const command = dataString[2].toLowerCase();
     console.log({command, dataString});
@@ -32,6 +32,16 @@ server.on("connection", (connection: net.Socket) => {
         connection.write(`${startOfString}${echoMessage}${endOfString}`);
         break;
       case "set":
+        // set expiry time for key-value pair
+        if (dataString[5] === 'px'){
+        const expiryTime = Number(dataString[8]);
+        if (expiryTime && expiryTime - Date.now() < 0){
+          connection.write(nullString);
+          break;
+        }
+        }
+
+
         const key = dataString[4];
         const value = dataString[6];
         keyValuePairs.set(key, value);
