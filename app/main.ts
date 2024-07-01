@@ -13,15 +13,19 @@ server.on("connection", (connection: net.Socket) => {
 
   // Handle data received from the client
   connection.on("data", (data: Buffer) => {
-    const dataString = data.toString();
-    console.log(dataString);
-    // respond to echo command
-    if (dataString.includes("ECHO")) {
-      connection.write(`+${dataString.slice(5)}\r\n`);
-    }
-    else if (dataString.includes("PING"))
-    {
-      connection.write(`+PONG\r\n`);
+    const dataString = data.toString().split(`\r\n`);
+    const command = dataString[2].toLowerCase();
+    console.log(command);
+    // add switch case to handle different commands
+    switch (command) {
+      case "ping":
+        connection.write(`+PONG\r\n`);
+        break;
+      case "echo":
+        connection.write(`${dataString[4]}\r\n`);
+        break;
+      default:
+        connection.write(`-ERR unknown command '${dataString[2].trim()}'\r\n`);
     }
   });
 
