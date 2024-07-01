@@ -39,7 +39,6 @@ server.on("connection", (connection: net.Socket) => {
         // check if the command has px and expiry time
         if (expiryTime && dataString[8] === 'px') {
           expiryTimes.set(key, expiryTime + Date.now());
-          connection.write(`${startOfString}OK${endOfString}`);
         }
         keyValuePairs.set(key, value);
         connection.write(`${startOfString}OK${endOfString}`);
