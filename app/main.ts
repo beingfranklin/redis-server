@@ -11,6 +11,9 @@ const server: net.Server = net.createServer();
 server.on("connection", (connection: net.Socket) => {
   console.log("New client connected");
 
+
+  const keyValuePairs = new Map<string, string>();
+
   // Handle data received from the client
   connection.on("data", (data: Buffer) => {
     const startOfString = '+';
@@ -27,6 +30,17 @@ server.on("connection", (connection: net.Socket) => {
       case "echo":
         const echoMessage = dataString[4];
         connection.write(`${startOfString}${echoMessage}${endOfString}`);
+        break;
+      case "set":
+        const key = dataString[4];
+        const value = dataString[6];
+        keyValuePairs.set(key, value);
+        connection.write(`${startOfString}OK${endOfString}`);
+        break;
+      case "get":
+        const keyToGet = dataString[4];
+        const valueToGet = keyValuePairs.get(keyToGet);
+        connection.write(`${startOfString}${valueToGet}${endOfString}`);
         break;
       default:
         const unknownCommand = dataString[2].trim();
