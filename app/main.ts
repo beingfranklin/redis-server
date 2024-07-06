@@ -94,10 +94,24 @@ server.on("connection", (connection: net.Socket) => {
   });
 });
 
+// Debugging: Print process.argv to verify arguments
+console.log('Process arguments:', process.argv);
+
+// Function to get the port from the arguments
+const getPortFromArgs = (args: string[]): number => {
+  const portIndex = args.indexOf("--port");
+  if (portIndex !== -1 && portIndex + 1 < args.length) {
+    const port = parseInt(args[portIndex + 1], 10);
+    if (!isNaN(port)) {
+      return port;
+    }
+  }
+  return 6379; // Default port if not specified
+};
+
 // Start the server and listen for incoming connections
-console.log('process.argv', process.argv);
-console.log("Starting server in port : ", parseInt(process.argv[4]));
-const PORT = parseInt(process.argv[4]) || 6379;
+const PORT = getPortFromArgs(process.argv);
+console.log(`Parsed port: ${PORT}`);
 server.listen(PORT, "127.0.0.1", () => {
   console.log(`Server started and listening on port ${PORT}`);
 });
