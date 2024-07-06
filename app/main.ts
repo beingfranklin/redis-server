@@ -95,6 +95,7 @@ server.on("connection", (connection: net.Socket) => {
 });
 
 // Start the server and listen for incoming connections
+console.log('process.argv', process.argv);
 console.log("Starting server in port : ", parseInt(process.argv[4]));
 const PORT = parseInt(process.argv[4]) || 6379;
 server.listen(PORT, "127.0.0.1", () => {
