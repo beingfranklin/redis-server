@@ -1,9 +1,6 @@
 import * as net from "net";
 import * as process from "process";
 
-// You can use print statements as follows for debugging, they'll be visible when running tests.
-console.log("Logs from your program will appear here!");
-
 // Create a server instance
 const server: net.Server = net.createServer();
 
@@ -106,7 +103,7 @@ const getPortFromArgs = (args: string[]): number => {
       return port;
     }
   }
-  return 6379; // Default port if not specified
+  return 6379;  
 };
 
 // Start the server and listen for incoming connections
