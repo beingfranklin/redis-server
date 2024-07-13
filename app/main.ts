@@ -7,6 +7,7 @@ import { endOfString } from "./helpers/common";
 import { handleSet } from "./commands/set";
 import { handleGet } from "./commands/get";
 import { handleUnknownCommand } from "./commands/unknown";
+import { handleInfo } from "./commands/info";
 
 const server: net.Server = net.createServer();
 
@@ -32,6 +33,9 @@ server.on("connection", (connection: net.Socket) => {
 				break;
 			case "get":
 				handleGet(connection, keyValuePairs, expiryTimes, dataString);
+				break;
+			case "info":
+				handleInfo(connection, dataString);
 				break;
 			default:
 				handleUnknownCommand(connection, command);
