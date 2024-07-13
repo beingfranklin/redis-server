@@ -1,6 +1,6 @@
 export const START_OF_STRING = "+";
 export const END_OF_STRING = "\r\n";
-export const NULL_STRING = `-$1${END_OF_STRING}`;
+export const NULL_STRING = `$-1${END_OF_STRING}`;
 export const ROLE = "role";
 export const MASTER_REPLID = "8371b4fb1155b71f4a04d3e1bc3e18c4a990aeeb";
 export const MASTER_REPL_OFFSET = 0;
