@@ -10,6 +10,8 @@ import { handleUnknownCommand } from "./commands/unknown";
 import { handleInfo } from "./commands/info";
 
 const server: net.Server = net.createServer();
+const keyValuePairs = new Map<string, string>();
+const expiryTimes = new Map<string, number>();
 
 server.on("connection", (connection: net.Socket) => {
 	console.log("New client connected");
@@ -17,8 +19,6 @@ server.on("connection", (connection: net.Socket) => {
 	connection.on("data", (data: Buffer) => {
 		const dataString = data.toString().split(endOfString);
 		const command = dataString[2].toLowerCase();
-		const keyValuePairs = new Map<string, string>();
-		const expiryTimes = new Map<string, number>();
 		console.log({ command, dataString });
 
 		switch (command) {
