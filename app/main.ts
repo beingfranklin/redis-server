@@ -1,114 +1,51 @@
-import * as net from "net";
-import * as process from "process";
+import * as net from "node:net";
+import * as process from "node:process";
+import { getPortFromArgs } from "./helpers/get-port-from-args";
+import { handlePing } from "./commands/ping";
+import { handleEcho } from "./commands/echo";
+import { endOfString } from "./helpers/common";
+import { handleSet } from "./commands/set";
+import { handleGet } from "./commands/get";
+import { handleUnknownCommand } from "./commands/unknown";
 
-// Create a server instance
 const server: net.Server = net.createServer();
 
-const keyValuePairs = new Map<string, string>();
-const expiryTimes = new Map<string, number>();
-
-const startOfString = '+';
-const endOfString = '\r\n';
-const nullString = '$-1' + endOfString;
-
-const handlePing = (connection: net.Socket) => {
-  connection.write(`${startOfString}PONG${endOfString}`);
-};
-
-const handleEcho = (connection: net.Socket, dataString: string[]) => {
-  const echoMessage = dataString[4];
-  connection.write(`${startOfString}${echoMessage}${endOfString}`);
-};
-
-const handleSet = (connection: net.Socket, dataString: string[]) => {
-  const key = dataString[4];
-  const value = dataString[6];
-  const expiryTime = Number(dataString[10]);
-
-  // check if the command has px and expiry time
-  if (expiryTime && dataString[8] === 'px') {
-    expiryTimes.set(key, expiryTime + Date.now());
-  }
-  keyValuePairs.set(key, value);
-  connection.write(`${startOfString}OK${endOfString}`);
-};
-
-const handleGet = (connection: net.Socket, dataString: string[]) => {
-  const keyToGet = dataString[4];
-  const expiryTime = expiryTimes.get(keyToGet);
-
-  if (expiryTime && (expiryTime < Date.now())) {
-    keyValuePairs.delete(keyToGet);
-    expiryTimes.delete(keyToGet);
-    connection.write(nullString);
-    return;
-  }
-
-  const valueToGet = keyValuePairs.get(keyToGet);
-  if (valueToGet === undefined) {
-    connection.write(nullString);
-  } else {
-    connection.write(`${startOfString}${valueToGet}${endOfString}`);
-  }
-};
-
-const handleUnknownCommand = (connection: net.Socket, command: string) => {
-  connection.write(`-ERR unknown command '${command}' ${endOfString}`);
-};
-
-// Handle new client connections
 server.on("connection", (connection: net.Socket) => {
-  console.log("New client connected");
+	console.log("New client connected");
 
-  // Handle data received from the client
-  connection.on("data", (data: Buffer) => {
-    const dataString = data.toString().split(endOfString);
-    const command = dataString[2].toLowerCase();
-    console.log({ command, dataString });
+	connection.on("data", (data: Buffer) => {
+		const dataString = data.toString().split(endOfString);
+		const command = dataString[2].toLowerCase();
+		const keyValuePairs = new Map<string, string>();
+		const expiryTimes = new Map<string, number>();
+		console.log({ command, dataString });
 
-    // add switch case to handle different commands
-    switch (command) {
-      case "ping":
-        handlePing(connection);
-        break;
-      case "echo":
-        handleEcho(connection, dataString);
-        break;
-      case "set":
-        handleSet(connection, dataString);
-        break;
-      case "get":
-        handleGet(connection, dataString);
-        break;
-      default:
-        handleUnknownCommand(connection, command);
-    }
-  });
+		switch (command) {
+			case "ping":
+				handlePing(connection);
+				break;
+			case "echo":
+				handleEcho(connection, dataString);
+				break;
+			case "set":
+				handleSet(connection, keyValuePairs, expiryTimes, dataString);
+				break;
+			case "get":
+				handleGet(connection, keyValuePairs, expiryTimes, dataString);
+				break;
+			default:
+				handleUnknownCommand(connection, command);
+		}
+	});
 
-  // Handle client disconnection
-  connection.on("end", () => {
-    console.log("Client disconnected");
-  });
+	connection.on("end", () => {
+		console.log("Client disconnected");
+	});
 });
 
-// Debugging: Print process.argv to verify arguments
-console.log('Process arguments:', process.argv);
-
-// Function to get the port from the arguments
-const getPortFromArgs = (args: string[]): number => {
-  const portIndex = args.indexOf("--port");
-  if (portIndex !== -1 && portIndex + 1 < args.length) {
-    const port = parseInt(args[portIndex + 1], 10);
-    if (!isNaN(port)) {
-      return port;
-    }
-  }
-  return 6379;  
-};
-
-// Start the server and listen for incoming connections
+console.log("Process arguments:", process.argv);
 const PORT = getPortFromArgs(process.argv);
 console.log(`Parsed port: ${PORT}`);
 server.listen(PORT, "127.0.0.1", () => {
-  console.log(`Server started and listening on port ${PORT}`);
+	console.log(`Server started and listening on port ${PORT}`);
 });
