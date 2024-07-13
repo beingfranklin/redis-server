@@ -2,13 +2,13 @@ import * as net from "node:net";
 import * as process from "node:process";
 import { handlePing } from "./commands/ping";
 import { handleEcho } from "./commands/echo";
-import { endOfString } from "./helpers/common";
 import { handleSet } from "./commands/set";
 import { handleGet } from "./commands/get";
 import { handleUnknownCommand } from "./commands/unknown";
 import { handleInfo } from "./commands/info";
+import { END_OF_STRING } from "./helpers/constants";
 import { getPortAndRoleFromArgs } from "./helpers/get-port-from-args";
-import type { ServerConfig } from "./types";
+import { Command, type ServerConfig } from "./types";
 
 const server: net.Server = net.createServer();
 const keyValuePairs = new Map<string, string>();
@@ -19,24 +19,24 @@ server.on("connection", (connection: net.Socket) => {
 	console.log("New client connected");
 
 	connection.on("data", (data: Buffer) => {
-		const dataString = data.toString().split(endOfString);
+		const dataString = data.toString().split(END_OF_STRING);
 		const command = dataString[2]?.toLowerCase();
 		console.log({ command, dataString });
 
 		switch (command) {
-			case "ping":
+			case Command.PING:
 				handlePing(connection);
 				break;
-			case "echo":
+			case Command.ECHO:
 				handleEcho(connection, dataString);
 				break;
-			case "set":
+			case Command.SET:
 				handleSet(connection, keyValuePairs, expiryTimes, dataString);
 				break;
-			case "get":
+			case Command.GET:
 				handleGet(connection, keyValuePairs, expiryTimes, dataString);
 				break;
-			case "info":
+			case Command.INFO:
 				handleInfo(connection, dataString, config.role);
 				break;
 			default:

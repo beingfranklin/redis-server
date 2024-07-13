@@ -1,10 +1,13 @@
 import type { Socket } from "node:net";
 import {
 	bulkString,
-	endOfString,
-	MASTER_REPL_OFFSET,
+	END_OF_STRING,
+	ROLE,
 	MASTER_REPLID,
-} from "../helpers/common";
+	MASTER_REPL_OFFSET,
+	MASTER_REPLID_KEY,
+	MASTER_REPL_OFFSET_KEY,
+} from "../helpers/constants";
 
 export const handleInfo = (
 	connection: Socket,
@@ -14,9 +17,9 @@ export const handleInfo = (
 	const section = dataString[4]?.toLowerCase();
 
 	if (section === "replication") {
-		const infoResponse = `role:${role}\nmaster_replid:${MASTER_REPLID}\nmaster_repl_offset:${MASTER_REPL_OFFSET}`;
+		const infoResponse = `${ROLE}:${role}\n${MASTER_REPLID_KEY}:${MASTER_REPLID}\n${MASTER_REPL_OFFSET_KEY}:${MASTER_REPL_OFFSET}`;
 		connection.write(bulkString(infoResponse));
 	} else {
-		connection.write(`$-1${endOfString}`);
+		connection.write(`$-1${END_OF_STRING}`);
 	}
 };

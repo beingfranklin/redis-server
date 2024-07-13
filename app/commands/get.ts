@@ -1,5 +1,5 @@
 import type { Socket } from "node:net";
-import { endOfString, nullString, bulkString } from "../helpers/common";
+import { END_OF_STRING, NULL_STRING, bulkString } from "../helpers/constants";
 
 export const handleGet = (
 	connection: Socket,
@@ -13,13 +13,13 @@ export const handleGet = (
 	if (expiryTime && expiryTime < Date.now()) {
 		keyValuePairs.delete(keyToGet);
 		expiryTimes.delete(keyToGet);
-		connection.write(nullString);
+		connection.write(NULL_STRING);
 		return;
 	}
 
 	const valueToGet = keyValuePairs.get(keyToGet);
 	if (valueToGet === undefined) {
-		connection.write(nullString);
+		connection.write(NULL_STRING);
 	} else {
 		connection.write(bulkString(valueToGet));
 	}

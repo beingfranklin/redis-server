@@ -1,6 +1,6 @@
 import type { Socket } from "node:net";
-import { endOfString, startOfString } from "../helpers/common";
+import { START_OF_STRING, END_OF_STRING, PONG } from "../helpers/constants";
 
 export const handlePing = (connection: Socket) => {
-	connection.write(`${startOfString}PONG${endOfString}`);
+	connection.write(`${START_OF_STRING}${PONG}${END_OF_STRING}`);
 };

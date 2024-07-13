@@ -1,5 +1,5 @@
 import type { Socket } from "node:net";
-import { endOfString, startOfString } from "../helpers/common";
+import { END_OF_STRING, OK, PX, START_OF_STRING } from "../helpers/constants";
 
 export const handleSet = (
 	connection: Socket,
@@ -12,9 +12,9 @@ export const handleSet = (
 	const expiryTime = Number(dataString[10]);
 
 	// check if the command has px and expiry time
-	if (expiryTime && dataString[8] === "px") {
+	if (expiryTime && dataString[8] === PX) {
 		expiryTimes.set(key, expiryTime + Date.now());
 	}
 	keyValuePairs.set(key, value);
-	connection.write(`${startOfString}OK${endOfString}`);
+	connection.write(`${START_OF_STRING}${OK}${END_OF_STRING}`);
 };
