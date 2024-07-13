@@ -1,11 +1,22 @@
-// Function to get the port from the arguments
-export const getPortFromArgs = (args: string[]): number => {
+import type { ServerConfig } from "../types";
+
+export const getPortAndRoleFromArgs = (args: string[]): ServerConfig => {
 	const portIndex = args.indexOf("--port");
+	const replicaOfIndex = args.indexOf("--replicaof");
+
+	let port = 6379;
+	let role = "master";
+
 	if (portIndex !== -1 && portIndex + 1 < args.length) {
-		const port = parseInt(args[portIndex + 1], 10);
-		if (!isNaN(port)) {
-			return port;
+		const parsedPort = Number.parseInt(args[portIndex + 1], 10);
+		if (!Number.isNaN(parsedPort)) {
+			port = parsedPort;
 		}
 	}
-	return 6379;
+
+	if (replicaOfIndex !== -1 && replicaOfIndex + 2 < args.length) {
+		role = "slave";
+	}
+
+	return { port, role };
 };
