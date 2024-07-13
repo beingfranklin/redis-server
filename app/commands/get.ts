@@ -1,5 +1,5 @@
 import type { Socket } from "node:net";
-import { endOfString, nullString, startOfString } from "../helpers/common";
+import { endOfString, nullString, bulkString } from "../helpers/common";
 
 export const handleGet = (
 	connection: Socket,
@@ -21,6 +21,6 @@ export const handleGet = (
 	if (valueToGet === undefined) {
 		connection.write(nullString);
 	} else {
-		connection.write(`${startOfString}${valueToGet}${endOfString}`);
+		connection.write(bulkString(valueToGet));
 	}
 };
