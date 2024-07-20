@@ -21,4 +21,8 @@ export const handleReplicaConnection = (
 	masterConnection.on("end", () => {
 		console.log("Disconnected from master");
 	});
+
+	masterConnection.on("error", (err) => {
+		console.error("Error connecting to master:", err);
+	});
 };
