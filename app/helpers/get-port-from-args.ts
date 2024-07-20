@@ -16,6 +16,7 @@ export const getPortAndRoleFromArgs = (args: string[]): ServerConfig => {
 	}
 
 	if (replicaOfIndex !== -1 && replicaOfIndex + 2 < args.length) {
+		// Ensure replicaOfIndex + 2 is within bounds
 		role = Role.SLAVE;
 	}
 

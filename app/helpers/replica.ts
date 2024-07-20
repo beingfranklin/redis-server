@@ -14,7 +14,7 @@ export const handleReplicaConnection = (
 	);
 
 	const masterConnection = net.createConnection(
-		{ host: masterHost, port: Number.parseInt(masterPort) },
+		{ host: masterHost, port: Number.parseInt(masterPort, 10) },
 		() => {
 			console.log("Connected to master");
 			masterConnection.write(`${Command.PING}${END_OF_STRING}`);
