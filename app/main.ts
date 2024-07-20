@@ -17,10 +17,8 @@ const expiryTimes = new Map<string, number>();
 const config: ServerConfig = getPortAndRoleFromArgs(process.argv);
 
 if (config.role === Role.SLAVE) {
-	const [masterHost, masterPort] = process.argv.slice(
-		config.replicaOfIndex + 1,
-		config.replicaOfIndex + 2,
-	);
+	const masterHost = process.argv[config.replicaOfIndex + 1];
+	const masterPort = process.argv[config.replicaOfIndex + 2];
 	handleReplicaConnection(masterHost, masterPort);
 }
 
