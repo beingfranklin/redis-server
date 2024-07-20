@@ -1,5 +1,5 @@
 import type { Socket } from "node:net";
-import { END_OF_STRING, NULL_STRING, bulkString } from "../helpers/constants";
+import { NULL_STRING, bulkString } from "../helpers/constants";
 
 export const handleGet = (
 	connection: Socket,

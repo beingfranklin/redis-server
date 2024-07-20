@@ -10,5 +10,18 @@ export const PONG = "PONG";
 export const OK = "OK";
 export const PX = "px";
 
+export const Command = {
+	INFO: "info",
+	GET: "get",
+	ECHO: "echo",
+	SET: "set",
+	PING: "ping",
+} as const;
+
+export const Role = {
+	MASTER: "master",
+	SLAVE: "slave",
+} as const;
+
 export const bulkString = (response: string) =>
 	`$${response.length}${END_OF_STRING}${response}${END_OF_STRING}`;

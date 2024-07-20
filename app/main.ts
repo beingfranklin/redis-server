@@ -6,14 +6,23 @@ import { handleSet } from "./commands/set";
 import { handleGet } from "./commands/get";
 import { handleUnknownCommand } from "./commands/unknown";
 import { handleInfo } from "./commands/info";
-import { END_OF_STRING } from "./helpers/constants";
+import { Command, END_OF_STRING, Role } from "./helpers/constants";
 import { getPortAndRoleFromArgs } from "./helpers/get-port-from-args";
-import { Command, type ServerConfig } from "./types";
+import { handleReplicaConnection } from "./helpers/replica";
+import type { ServerConfig } from "./types";
 
 const server: net.Server = net.createServer();
 const keyValuePairs = new Map<string, string>();
 const expiryTimes = new Map<string, number>();
 const config: ServerConfig = getPortAndRoleFromArgs(process.argv);
+
+if (config.role === Role.SLAVE) {
+	const [masterHost, masterPort] = process.argv.slice(
+		config.replicaOfIndex + 1,
+		config.replicaOfIndex + 3,
+	);
+	handleReplicaConnection(masterHost, masterPort);
+}
 
 server.on("connection", (connection: net.Socket) => {
 	console.log("New client connected");
