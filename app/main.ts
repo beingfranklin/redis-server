@@ -19,7 +19,7 @@ const config: ServerConfig = getPortAndRoleFromArgs(process.argv);
 if (config.role === Role.SLAVE) {
 	const [masterHost, masterPort] = process.argv.slice(
 		config.replicaOfIndex + 1,
-		config.replicaOfIndex + 3,
+		config.replicaOfIndex + 2,
 	);
 	handleReplicaConnection(masterHost, masterPort);
 }
